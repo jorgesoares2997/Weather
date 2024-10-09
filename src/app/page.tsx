@@ -8,7 +8,6 @@ import {
   FaWind,
 } from "react-icons/fa6";
 
-
 interface WeatherData {
   name: string;
   sys: {
@@ -43,7 +42,7 @@ const UnsplashPhotos = ({ city, setBackground }: UnsplashPhotosProps) => {
       );
       const data = response.data;
       if (data.results.length > 0) {
-        setBackground(data.results[0].urls.regular); 
+        setBackground(data.results[0].urls.regular);
       }
     };
 
@@ -52,20 +51,20 @@ const UnsplashPhotos = ({ city, setBackground }: UnsplashPhotosProps) => {
     }
   }, [city, setBackground]);
 
-  return null; 
+  return null;
 };
 
 export default function Home() {
-  const [city, setCity] = useState<string>(""); 
+  const [city, setCity] = useState<string>("");
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
-  const [background, setBackground] = useState<string>(""); 
+  const [background, setBackground] = useState<string>("");
 
   const getWeatherData = async (city: string) => {
     const apiWeatherURL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}&lang=pt_br`;
 
     try {
       const res = await axios.get(apiWeatherURL);
-      setWeatherData(res.data); 
+      setWeatherData(res.data);
     } catch (error) {
       console.error("Error fetching weather data:", error);
       setWeatherData(null);
@@ -89,7 +88,7 @@ export default function Home() {
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      handleSearch(e); 
+      handleSearch(e);
     }
   };
 
@@ -116,12 +115,12 @@ export default function Home() {
               value={city}
               onChange={(e) => setCity(e.target.value)}
               onKeyDown={handleKeyPress}
-              className="p-2 border rounded text-[#000] flex-1"
+              className="p-2 border rounded text-[#000] flex-1 w-full"
             />
             <button
               id="search"
               onClick={handleSearch}
-              className="ml-2 p-2 bg-blue-500 text-white rounded"
+              className="ml-2 hidden size-12 lg:flex items-center justify-center active:bg-blue-200 bg-blue-500 text-white rounded"
             >
               <FaMagnifyingGlass />
             </button>
@@ -130,15 +129,15 @@ export default function Home() {
         {weatherData && (
           <div id="weather-data" className="p-4 text-white">
             <h2 className="text-2xl flex items-center">
-              <FaLocationDot className="mr-2" />
-              <div className="flex items-center justify-center m-auto">
+              <div className="flex w-full items-center justify-between m-auto">
+                <FaLocationDot className="" />
                 <span id="city">{weatherData.name}</span>
 
                 <img
                   src={`https://flagsapi.com/${weatherData.sys.country}/flat/64.png`}
                   id="country"
                   alt={`${weatherData.sys.country} flag`}
-                  className="ml-2"
+                  className=""
                 />
               </div>
             </h2>
@@ -146,7 +145,7 @@ export default function Home() {
               <span>{Math.round(weatherData.main.temp)}</span>&deg;C
             </p>
             <div id="description-container" className="flex items-center">
-              <p id="description" className="mr-2">
+              <p id="description" className="">
                 {weatherData.weather[0].description}
               </p>
               <img
@@ -155,16 +154,23 @@ export default function Home() {
                 alt={weatherData.weather[0].description}
               />
             </div>
-            <div id="details-container" className="mt-4">
-              <p id="humidity" className="flex items-center">
-                <FaDroplet className="mr-2" />
-                <span>{weatherData.main.humidity}%</span>
-              </p>
+            <div
+              id="details-container"
+              className="mt-4 flex items-center justify-center"
+            >
+              <div className="m-auto">
+                <p id="humidity" className="flex items-center">
+                  <FaDroplet className="mr-2" />
+                  <span>{weatherData.main.humidity}%</span>
+                </p>
+              </div>
               <span className="border-l h-12"></span>
-              <p id="wind" className="flex items-center mt-2">
-                <FaWind className="mr-2" />
-                <span>{weatherData.wind.speed} km/h</span>
-              </p>
+              <div className="m-auto">
+                <p id="wind" className="flex items-center">
+                  <FaWind className="mr-2" />
+                  <span>{weatherData.wind.speed} km/h</span>
+                </p>
+              </div>
             </div>
           </div>
         )}

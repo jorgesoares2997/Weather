@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import axios from "axios"; // Importando a biblioteca Axios
+import axios from "axios";
 import {
   FaDroplet,
   FaLocationDot,
@@ -8,23 +8,42 @@ import {
   FaWind,
 } from "react-icons/fa6";
 
-const apiKey = process.env.NEXT_PUBLIC_API_KEY;
-const accessKey = process.env.NEXT_PUBLIC_ACCESS_KEY;
 
-const UnsplashPhotos = ({ city, setBackground }: any) => {
+interface WeatherData {
+  name: string;
+  sys: {
+    country: string;
+  };
+  main: {
+    temp: number;
+    humidity: number;
+  };
+  weather: {
+    description: string;
+    icon: string;
+  }[];
+  wind: {
+    speed: number;
+  };
+}
+
+const apiKey = process.env.NEXT_PUBLIC_API_KEY as string;
+const accessKey = process.env.NEXT_PUBLIC_ACCESS_KEY as string;
+
+interface UnsplashPhotosProps {
+  city: string;
+  setBackground: (url: string) => void;
+}
+
+const UnsplashPhotos = ({ city, setBackground }: UnsplashPhotosProps) => {
   useEffect(() => {
     const fetchPhotos = async () => {
-      try {
-        const response = await axios.get(
-          `https://api.unsplash.com/search/photos?query=${city}&client_id=${accessKey}`
-        );
-        const data = response.data;
-
-        if (data.results.length > 0) {
-          setBackground(data.results[0].urls.regular); // Define a URL da imagem como o fundo
-        }
-      } catch (error) {
-        console.error("Error fetching photos:", error);
+      const response = await axios.get(
+        `https://api.unsplash.com/search/photos?query=${city}&client_id=${accessKey}`
+      );
+      const data = response.data;
+      if (data.results.length > 0) {
+        setBackground(data.results[0].urls.regular); 
       }
     };
 
@@ -33,20 +52,20 @@ const UnsplashPhotos = ({ city, setBackground }: any) => {
     }
   }, [city, setBackground]);
 
-  return null; // Não precisamos retornar nada, apenas mudar o fundo.
+  return null; 
 };
 
 export default function Home() {
-  const [city, setCity] = useState("");
-  const [weatherData, setWeatherData] = useState<any>(null);
-  const [background, setBackground] = useState(""); // Estado para armazenar a URL do fundo
+  const [city, setCity] = useState<string>(""); 
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [background, setBackground] = useState<string>(""); 
 
   const getWeatherData = async (city: string) => {
     const apiWeatherURL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}&lang=pt_br`;
 
     try {
       const res = await axios.get(apiWeatherURL);
-      setWeatherData(res.data);
+      setWeatherData(res.data); 
     } catch (error) {
       console.error("Error fetching weather data:", error);
       setWeatherData(null);
@@ -68,10 +87,9 @@ export default function Home() {
     getWeatherData(city);
   };
 
-  // Função que lida com a tecla Enter
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      handleSearch(e); // Chama a função de pesquisa ao pressionar Enter
+      handleSearch(e); 
     }
   };
 
@@ -79,12 +97,12 @@ export default function Home() {
     <div
       className="h-full w-full flex m-auto justify-center bg-cover bg-center"
       style={{
-        backgroundImage: weatherData ? `url(${background})` : "none", // Exibe a imagem de fundo somente após a busca
+        backgroundImage: weatherData ? `url(${background})` : "none",
       }}
     >
       <div className="container m-auto h-auto w-1/3 bg-opacity-90 grid items-center justify-center p-4 rounded-lg">
         {weatherData && (
-          <UnsplashPhotos city={city} setBackground={setBackground} /> // Somente busca a imagem após a pesquisa
+          <UnsplashPhotos city={city} setBackground={setBackground} />
         )}
         <div className="form p-4">
           <h3 className="text-[#fff] text-xl mb-4">
@@ -97,7 +115,7 @@ export default function Home() {
               id="city-input"
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              onKeyDown={handleKeyPress} // Detecta a tecla Enter
+              onKeyDown={handleKeyPress}
               className="p-2 border rounded text-[#000] flex-1"
             />
             <button
